@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Collections;
 
-namespace Autumn
+namespace AutumnFramework
 {
-    public static class Autumn
+    public static partial class Autumn
     {
 
         private static Type[] BeanTypes;
@@ -17,29 +17,50 @@ namespace Autumn
 
         private static bool isIOCInitialized;
 
-        //运行时入口
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        static void RuntimeInitializeOnLoadMethod()
+        // Autumn 生命周期
+        //  启动 Play
+        //        ↓
+        // Unity 原生 Awake消息   ← 可提前PushBean
+        //        ↓
+        //Unity 原生 OnEnable消息
+        //        ↓
+        static void Autumn唯一入口函数()
         {
-            //生命周期
-            //  AfterSceneLoad
-            //    ↓
-
             isIOCInitialized = false;
             //    ↓
-            InitializeIOC();    // →   Setup 消息
+            InitializeIOC();    //   →   Setup 消息  →  Autumn插件 Setup   →   Unity 原生Awake消息
             //    ↓
             isIOCInitialized = true;   // 此时所有Bean已生成，但尚未装配
             //    ↓         
-            Autowired();
+            Autowired();      // → Autumn插件 Filter  
             //    ↓
-            // Start 消息
+            // Autumn Start 消息
             Call("Start");
             //    ↓
-            //  初始化完成
+            CheckEmptywired(); 
+            //     ↓
         }
+            //     ↓
+            // Unity 原生Start消息
 
+
+        // 后续操作生命周期
+        // PushBean()  →   Autumn Start 消息  →  Autowired
+
+        public static void CheckEmptywired()
+        {
+            foreach (var fieldInfo in GetAttributedFieldsInfo<Autowired>())
+            {
+                foreach (var bean in GetBeans(fieldInfo.DeclaringType))
+                {
+                    if (AutumnUtil.IsEmptyListOrZeroArray(fieldInfo.GetValue(bean)))
+                    {
+                        Debug.LogWarning($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} ← 装配为空或空数组或空列表");
+                    }
+                }
+            }
+        }
         public static void InitializeIOC()
         {
             #region 添加Bean操作
@@ -50,9 +71,6 @@ namespace Autumn
                 BeanConfig beanConfig = CreateEmptyBeanConfig(beanType);
                 if (beanType.GetCustomAttribute<Beans>() != null)
                 {
-                    // if(beanType.GetCustomAttribute<Configuration>()!=null){
-                    //     LoadConfiguration(beanType);
-                    // }
                 }
                 else
                     PushBean(beanType);
@@ -72,7 +90,6 @@ namespace Autumn
                     if (plugins != null)
                         foreach (var plugin in plugins)
                         {
-
                             if (plugin.Setup(beanType) is IEnumerable IEnumerableValue)
                             {
                                 PushExistedBean(beanType, IEnumerableValue);
@@ -105,7 +122,6 @@ namespace Autumn
                     var beans = Filter(GetBeans(beanType)).ToArray();
                     Array filledArray = Array.CreateInstance(beanType, beans.Length);
                     Array.Copy(beans, filledArray, beans.Length);
-
                     Assign(filledArray);
                 }
                 else if (fieldInfo.FieldType.IsGenericType && fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(List<>))
@@ -150,8 +166,7 @@ namespace Autumn
 
                 void Assign(object value)
                 {
-                    if (IsEmptyListOrZeroArray(value))
-                        Debug.LogWarning($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} ← 装配为空或空数组或空列表");
+
 
 
                     foreach (var obj in GetBeans(fieldInfo.DeclaringType))
@@ -162,25 +177,7 @@ namespace Autumn
                             throw new AutumnCoreException($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} 装配失败,因为{obj}为空");
                     }
                 }
-                static bool IsEmptyListOrZeroArray(object obj)
-                {
-                    if (obj == null)
-                    {
-                        return true;
-                    }
 
-                    if (obj is IList list && list.Count == 0)
-                    {
-                        return true;
-                    }
-
-                    if (obj is Array array && array.Length == 0)
-                    {
-                        return true;
-                    }
-
-                    return false;
-                }
             }
 
         }

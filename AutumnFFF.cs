@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection;
-namespace Autumn
+namespace AutumnFramework
 {
     [Bean]
     public class AutumnFFF : MonoBehaviour

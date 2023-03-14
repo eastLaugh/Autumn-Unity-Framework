@@ -16,3 +16,8 @@
 - 可扩展：你可以自己编写插件，来改变Autumn组织Bean的方式。
 
 作者邮箱：east_laugh@qq.com
+
+
+## 生命周期
+
+![image](https://user-images.githubusercontent.com/39405923/225065194-f591ca37-33e6-478f-b617-6e30335d9228.png)

@@ -12,7 +12,7 @@ Autumn IOC Framework Based on Unity
 */
 
 using UnityEngine;
-using Autumn;  //引用命名空间
+using AutumnFramework;
 
 [Bean]    //将某个系统类标记为一个[Bean]    Bean意味着：单例、全局、豆角(?)
 public class SingleSystem
@@ -25,17 +25,13 @@ public class SingleSystem
 
     public SingleSystem()
     {
-        Debug.Log("SingleSystem被创建");
-        /*  不被允许：
-        singleMonoBehaviour.doSomething()
-        因为此时singleMonoBehaviour还未被装配
-        */
+        Debug.Log("SingleSystem被创建，这时还没有完成自动装配");
     }
 
     // 所有Bean兼容Unity消息（Start、Update）
     void Start()
     {
-        Debug.Log("当执行此Start内，已完成自动装配。另外，此Start会比原生Start更早执行。");
+        Debug.Log("当执行此Start内，已完成自动装配");
     }
     void Update()
     {
@@ -45,19 +41,19 @@ public class SingleSystem
     {
         数据层.数据++;
         Debug.Log("通过自动装配从别处调用此函数_实现解耦");
-        Autumn.Autumn.Harvest<SingleMonoBehaviour>().通过Harvest_API从别处调用_实现解耦();
+        Autumn.Harvest<SingleMonoBehaviour>().通过Harvest_API从别处调用_实现解耦();
     }
 }
 
 [Bean]   //将一个MonoBehaviour子类标记为Bean，他会自动出现在场景里！
-public class SingleMonoBehaviour : MonoBehaviour
+public class SingleMonoBehaviour : /**/  MonoBehaviour   /**/
 {
 
     [Autowired]
     private SingleSystem singleSystem;
 
     [Autowired]
-    private 数据层 数据层1;
+    private 数据层 数据层;
 
     private void Awake() {
         //这里还没完成自动装配，不能调用其他Bean
@@ -65,7 +61,7 @@ public class SingleMonoBehaviour : MonoBehaviour
     private void Start()
     {
         //哈哈，这里已经完成了自动装配。随意调用吧！
-        数据层1.数据++;
+        数据层.数据++;
         Debug.Log("Monobehaviour原生Start，会比Autumn提供的Start较晚执行");
         singleSystem.通过自动装配从别处调用此函数_实现解耦();
 
@@ -73,16 +69,14 @@ public class SingleMonoBehaviour : MonoBehaviour
     }
     public void 通过Harvest_API从别处调用_实现解耦()
     {
-        数据层1.数据++;
+        数据层.数据++;
         Debug.Log("通过Harvest_API从别处调用_实现解耦");
-        Debug.Log(数据层1.数据++);
+        Debug.Log(数据层.数据++);
     }
 
 }
 
-
-[System.Serializable]
-[Bean]     
+[Bean]
 public class 数据层{
     public int 数据;
 }
@@ -90,8 +84,8 @@ public class 数据层{
 
 /*
 
-如你所见，Autumn 成功为这三个紧密关系的类解了耦！
-酸爽的调用吧！
+如你所见，Autumn 成功为这三个紧密的系统解了耦！
+尽情酸爽的调用吧！
 
 */
 
