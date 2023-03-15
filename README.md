@@ -5,10 +5,10 @@
 </p><p align="center" style="font-size:80px">
   🍃🍃🍃
 </p>
+<h1 align="center" style="font-size:80px">Autumn</h1>
+<h1 align="center" style="font-size:80px">深夏</h1>
 
-# Autumn
-
-面向UNITY的轻量级、渐进式、开箱即用的IOC框架。
+面向Unity的轻量级、渐进式、开箱即用、可扩展的IOC框架。
 
 - 轻量级：AutumnCore核心代码仅占约400行。
 - 渐进式：在你需要的任何地方、任何时机引入并享用。
@@ -42,7 +42,7 @@ Beans是Bean的容量扩增，支持多个实例。通过Setup API或PushBean操
 
 - [Config]
 
-Config的本质是加装了插件Configurationer的Beans，详见Autumn的插件系统。[Config]适用于ScriptableObject，游戏启动时，Autumn会自动调取Resources目录下的ScriptableObject并作为Bean添加。
+Config的本质是加装了插件Configurationer的Beans，详见Autumn的插件系统。[Config]适用于ScriptableObject，游戏启动时，会自动调取Resources目录下的ScriptableObject并作为Bean添加。在装配时，可以指定装配msg，[Config]的插件Configurationer会查找符合msg作为对象名的Bean注入。例如，使用[Autowired("生产环境")]装配名为生产环境的ScriptableObject。
 
 # 用于字段的特性
 
@@ -54,7 +54,7 @@ _ [Autowired(object msg)]
 
 在自动装配时传入msg，用于与插件、Filter API通讯。例如，装配[Config]标记的类型时，使用[Autowired("生产环境")]会装配名称为生产环境的ScriptableObject，详见[Config] API。
 
-# 代码 API
+# 代码
 
 - Autumn.PushBean()
 
@@ -70,4 +70,4 @@ _ [Autowired(object msg)]
 
 - Autumn.Autowired()
 
-手动进行一次自动装配。一般情况下不需要用到。
+手动进行一次自动装配。
