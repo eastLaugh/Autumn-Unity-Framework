@@ -3,32 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace AutumnFramework
 {
-    public static partial class Autumn
-    {
 
-    }
+
     #region 特性
     [System.AttributeUsage(System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public class Bean : System.Attribute
     {
         public virtual bool isMultiple => false;
-        public Plugin[] plugins;
+        public virtual Type[] plugins { get; } = new Type[] { };
     }
     public class Beans : Bean
     {
         override public bool isMultiple => true;
     }
-    public class Config : Beans
+    public class Config : Beans 
     {
-        public Config()
-        {
-            //不应该在 Bean 与 Plugin 中之间建立通讯
-            plugins = new Plugin[] { new Configurationer() };
-        }
+        public override Type[] plugins { get; } = new Type[] { typeof(Configurationer) };   //安装Configurationer插件
     }
+
     [System.AttributeUsage(AttributeTargets.Field)]
     public class Autowired : System.Attribute
     {

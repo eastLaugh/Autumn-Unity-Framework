@@ -4,7 +4,7 @@ using System.Reflection;
 namespace AutumnFramework
 {
     [Bean]
-    public class AutumnFFF : MonoBehaviour
+    public class AutumnSceneThread : MonoBehaviour
     {
 
 

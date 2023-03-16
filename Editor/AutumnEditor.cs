@@ -25,7 +25,7 @@ namespace AutumnFramework
         {
 
             if (Application.isPlaying)
-                if (instanceID == Autumn.Harvest<AutumnFFF>().gameObject.GetInstanceID())
+                if (instanceID == Autumn.Harvest<AutumnSceneThread>().gameObject.GetInstanceID())
                 {
                     EditorGUI.DrawRect(selectionRect, Color.black);
                     EditorGUI.LabelField(selectionRect, " Autumn 框架已经启动。 禁用此物件，将禁用Bean的Unity消息支持");
@@ -70,19 +70,37 @@ namespace AutumnFramework
                         beanDetailEditorWindow.beanConfig = kvp.Value;
                         beanDetailEditorWindow.Show();
                     }
+
+
                     GUILayout.EndHorizontal();
                     foreach (object bean in kvp.Value.Beans)
                     {
                         GUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
-                        GUILayout.Label(bean.ToString());
+                        if (kvp.Value.BeanEntity == BeanConfig.Entity.ScriptalObject)
+                            if (GUILayout.Button("ScriptableObject"))
+                            {
+                                AssetDatabase.OpenAsset(MonoScript.FromScriptableObject((ScriptableObject)bean));
+                            }
+                        else if (kvp.Value.BeanEntity == BeanConfig.Entity.Monobehaviour)
+                                if (GUILayout.Button("MonoBehaviour"))
+                                {
+                                    AssetDatabase.OpenAsset(MonoScript.FromMonoBehaviour((MonoBehaviour)bean));
+                                }
+
+                        GUIStyle style = new GUIStyle(GUI.skin.label);
+                        style.normal.textColor = Color.green;
+                        style.fontStyle = FontStyle.Bold;
+                        GUILayout.Label(bean.ToString(), style);
                         GUILayout.EndHorizontal();
                     }
                     // GUILayout.Label("------------------------");
                     GUILayout.Space(20);
                 }
                 GUILayout.EndScrollView();
-            }else{
+            }
+            else
+            {
                 GUILayout.Label("Bean仅存在于运行时");
             }
 

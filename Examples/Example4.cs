@@ -18,18 +18,6 @@ public class Example4 :MonoBehaviour {
     public void doSomething(){
         Debug.Log($"我是已经存在的{name}");
     }
-    private void OnEnable()
-    {
-        
-    }
-    private void Awake()
-    {
-        
-    }
-    private void Start()
-    {
-        
-    }
 }
 [Bean]
 public class 某个管控Gameobject的进程{
