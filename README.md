@@ -26,6 +26,7 @@
 ```Autumn-Unity-Framework/Examples/*.cs```
 
 # 生命周期
+![image](https://user-images.githubusercontent.com/39405923/225812457-45fe599f-9b87-472d-b236-082966cf1333.png)
 
 # API
 
