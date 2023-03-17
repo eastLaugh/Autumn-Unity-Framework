@@ -13,16 +13,23 @@ namespace AutumnFramework
     [System.AttributeUsage(System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public class Bean : System.Attribute
     {
+        public Type[] plugins = new Type[] { };
         public virtual bool isMultiple => false;
-        public virtual Type[] plugins { get; } = new Type[] { };
+
     }
     public class Beans : Bean
     {
+
         override public bool isMultiple => true;
     }
-    public class Config : Beans 
+    public class Config : Beans
     {
-        public override Type[] plugins { get; } = new Type[] { typeof(Configurationer) };   //安装Configurationer插件
+
+        public Config()
+        {
+            plugins = new Type[] { typeof(Configurationer) };   //安装Configurationer插件
+
+        }
     }
 
     [System.AttributeUsage(AttributeTargets.Field)]

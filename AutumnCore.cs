@@ -41,7 +41,7 @@ namespace AutumnFramework
             //
             Call("Start");     //  Autumn Start 消息
             //    ↓
-            CheckEmptywired("在Unity Start消息开始之前，发现");
+            CheckEmptywired();  // 空装配检查
             //     ↓
             Debug.Log(autumnConfig.HelloText);
         }
@@ -53,7 +53,7 @@ namespace AutumnFramework
         // PushBean() → Autumn Start 消息  →  Autowired()
         // Autowired() → Autumn Filter 消息
 
-        public static void CheckEmptywired(String tip)
+        public static void CheckEmptywired()
         {
             foreach (var fieldInfo in GetAttributedFieldsInfo<Autowired>())
             {
@@ -61,7 +61,7 @@ namespace AutumnFramework
                 {
                     if (AutumnUtil.IsEmptyListOrZeroArray(fieldInfo.GetValue(bean)))
                     {
-                        Debug.LogWarning($"{tip} , {fieldInfo.DeclaringType.FullName} . {fieldInfo} ← 装配为空或空数组或空列表");
+                        Debug.LogWarning($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} ← 装配为空或空数组或空列表");
                     }
                 }
             }
@@ -119,6 +119,7 @@ namespace AutumnFramework
                         Plugin pluginInstance = (Plugin)Activator.CreateInstance(pluginType);
                         //注入beanType
                         typeof(Plugin).GetField("beanType", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(pluginInstance, beanType);
+
                         returnValue = methodInfo.Invoke(pluginInstance, paraments);
                     }
 
@@ -180,18 +181,18 @@ namespace AutumnFramework
                     else
                         Assign(null);
                 }
-                IEnumerable<object> Filter(IEnumerable<object> origin)
+                IEnumerable<object> Filter(IEnumerable<object> originBeans)
                 {
-                    foreach (var item in origin)
+                    foreach (var bean in originBeans)
                     {
                         bool check = true;
                         PlugIn(beanType, "Filter", boolValue =>
                         {
                             if (!(bool)boolValue)
                                 check = false;
-                        }, item);
+                        }, bean , autowired.msg);
                         if (check)
-                            yield return item;
+                            yield return bean;
 
                     }
                 }

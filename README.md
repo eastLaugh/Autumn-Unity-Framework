@@ -1,12 +1,16 @@
-<p align="center" style="font-size:80px">
-  🍃🍃🍃
-</p><p align="center" style="font-size:80px">
-  🍃🍃🍃
-</p><p align="center" style="font-size:80px">
-  🍃🍃🍃
+<p align="center">
+  <h3 align="center">🍃🍃🍃</h3>
+  <h3 align="center">🍃🍃🍃</h3>
+  <h3 align="center">🍃🍃🍃</h3>
 </p>
-<h1 align="center" style="font-size:80px">Autumn</h1>
-<h1 align="center" style="font-size:80px">深夏</h1>
+<p align="center">
+  <h3 align="center">Autumn</h3>
+</p>
+<p align="center">
+  <h3 align="center">千秋</h3>
+</p>  
+
+（破坏性更新阶段……在发布正式版本前，请勿投入正式使用）
 
 面向Unity的轻量级、渐进式、开箱即用、可扩展的IOC框架。
 
@@ -17,34 +21,31 @@
 
 作者邮箱：east_laugh@qq.com
 
+# 案例/快速上手
 
-## 生命周期
+```Autumn-Unity-Framework/Examples/*.cs```
 
-![image](https://user-images.githubusercontent.com/39405923/225065194-f591ca37-33e6-478f-b617-6e30335d9228.png)
+# 生命周期
 
-## 快速上手
-
-阅读 Examples/*.cs 中的示例以快速上手
-
-## API
+# API
 
 Autumn的API极其精简。大部分常用API均为C#特性，无需代码。
 
-# 用于类的特性
+## 用于类的特性
 
 - [Bean]
 
-将一个类标记为Bean。在游戏启动后，Autumn会自动实例化该类，适合单例系统使用。
+将一个类标记为Bean。启动后，Autumn会自动实例化该类，适合单例系统使用。
 
 - [Beans]
 
-Beans是Bean的容量扩增，支持多个实例。通过Setup API或PushBean操作手动添加实例。
+Beans是Bean的容量扩增，支持多个实例。通过Setup API或PushBean等操作手动添加实例。
 
 - [Config]
 
 Config的本质是加装了插件Configurationer的Beans，详见Autumn的插件系统。[Config]适用于ScriptableObject，游戏启动时，会自动调取Resources目录下的ScriptableObject并作为Bean添加。在装配时，可以指定装配msg，[Config]的插件Configurationer会查找符合msg作为对象名的Bean注入。例如，使用[Autowired("生产环境")]装配名为生产环境的ScriptableObject。
 
-# 用于字段的特性
+## 用于字段的特性
 
 - [Autowired]
 
@@ -54,7 +55,7 @@ _ [Autowired(object msg)]
 
 在自动装配时传入msg，用于与插件、Filter API通讯。例如，装配[Config]标记的类型时，使用[Autowired("生产环境")]会装配名称为生产环境的ScriptableObject，详见[Config] API。
 
-# 代码
+## 代码
 
 - Autumn.PushBean()
 

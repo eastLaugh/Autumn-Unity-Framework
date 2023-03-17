@@ -77,21 +77,26 @@ namespace AutumnFramework
                     {
                         GUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
-                        if (kvp.Value.BeanEntity == BeanConfig.Entity.ScriptalObject)
-                            if (GUILayout.Button("ScriptableObject"))
-                            {
-                                AssetDatabase.OpenAsset(MonoScript.FromScriptableObject((ScriptableObject)bean));
-                            }
-                        else if (kvp.Value.BeanEntity == BeanConfig.Entity.Monobehaviour)
-                                if (GUILayout.Button("MonoBehaviour"))
-                                {
-                                    AssetDatabase.OpenAsset(MonoScript.FromMonoBehaviour((MonoBehaviour)bean));
-                                }
+                        switch (kvp.Value.BeanEntity)
+                        {
+                            case BeanConfig.Entity.ScriptalObject:
+                                if (GUILayout.Button("ScriptableObject"))
+                                    AssetDatabase.OpenAsset(MonoScript.FromScriptableObject((ScriptableObject)bean));
 
-                        GUIStyle style = new GUIStyle(GUI.skin.label);
-                        style.normal.textColor = Color.green;
-                        style.fontStyle = FontStyle.Bold;
-                        GUILayout.Label(bean.ToString(), style);
+                                break;
+
+                            case BeanConfig.Entity.Monobehaviour:
+                                if (GUILayout.Button("MonoBehaviour"))
+                                    // AssetDatabase.OpenAsset(MonoScript.FromMonoBehaviour((MonoBehaviour)bean));
+                                    EditorUtility.OpenWithDefaultApp(AssetDatabase.GetAssetPath((MonoBehaviour)bean));
+                                break;
+                        }
+                        {
+                            GUIStyle style = new GUIStyle(GUI.skin.label);
+                            style.normal.textColor = Color.green;
+                            style.fontStyle = FontStyle.Bold;
+                            GUILayout.Label(bean.ToString(), style);
+                        }
                         GUILayout.EndHorizontal();
                     }
                     // GUILayout.Label("------------------------");

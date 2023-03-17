@@ -10,15 +10,18 @@ namespace AutumnFramework
     public abstract class Plugin
     {
         protected Type beanType; 
-        protected object AutowiredMsg;
-        public abstract IEnumerable Setup();
-        public abstract bool Filter(object bean);
+        protected virtual IEnumerable Setup(){
+            return null;
+        }
+        protected virtual bool Filter(object bean,object autowiredMsg){
+            return true;
+        }
     }
 
     // 用于[Config]的Bean的外置插件 （Autumn Built-In）
     public class Configurationer : Plugin
     {
-        public override IEnumerable Setup()
+        protected override IEnumerable Setup()
         {
             if(!typeof(ScriptableObject).IsAssignableFrom(beanType)){
                 Debug.LogWarning("[Config]的最佳实践是用于ScriptableObject，而不是其他类。如果想要在其他类中实现类似[Config]的扩展，参考Autumn插件系统。");
@@ -30,15 +33,15 @@ namespace AutumnFramework
             }
         }
 
-        public override bool Filter(object bean)
+        protected override bool Filter(object bean,object autowiredMsg)
         {
-            if (AutowiredMsg == null)
+            if (autowiredMsg == null)
             {
                 return true; //放行
             }
             else
             {
-                return (bean as ScriptableObject).name == AutowiredMsg.ToString();
+                return (bean as ScriptableObject).name == autowiredMsg.ToString();
             }
         }
     }

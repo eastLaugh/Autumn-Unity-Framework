@@ -8,4 +8,6 @@ using AutumnFramework;
 public class AutumnConfig : ScriptableObject
 {
     public string HelloText;
+
+    public bool firstStart;
 }
