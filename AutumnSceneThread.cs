@@ -6,7 +6,8 @@ namespace AutumnFramework
     [Bean]
     public class AutumnSceneThread : MonoBehaviour
     {
-
+        [Autowired]
+        private static AutumnConfig autumnConfig;
 
         [SerializeField]
         [Autowired]
@@ -15,6 +16,14 @@ namespace AutumnFramework
         private void Update()
         {
             Autumn.Call("Update");
+        }
+
+        private void Start() {
+            Debug.Log(autumnConfig.HelloText);
+
+            AutumnUtil.WaitForNextFrame(()=>{
+                Autumn.Call("AfterStart");
+            });
         }
     }
 }

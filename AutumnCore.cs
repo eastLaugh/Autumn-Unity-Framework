@@ -42,8 +42,7 @@ namespace AutumnFramework
             Call("Start");     //  Autumn Start 消息
             //    ↓
             CheckEmptywired();  // 空装配检查
-            //     ↓
-            Debug.Log(autumnConfig.HelloText);
+            //     ↓    
         }
         //     ↓
         // Unity 原生Start消息
@@ -57,12 +56,22 @@ namespace AutumnFramework
         {
             foreach (var fieldInfo in GetAttributedFieldsInfo<Autowired>())
             {
-                foreach (var bean in GetBeans(fieldInfo.DeclaringType))
+                if (fieldInfo.IsStatic)
                 {
-                    if (AutumnUtil.IsEmptyListOrZeroArray(fieldInfo.GetValue(bean)))
-                    {
+                    if (check(null))
                         Debug.LogWarning($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} ← 装配为空或空数组或空列表");
+                }
+                else
+                    foreach (var bean in GetBeans(fieldInfo.DeclaringType))
+                    {
+                        if (check(bean))
+                        {
+                            Debug.LogWarning($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} ← 装配为空或空数组或空列表");
+                        }
                     }
+                bool check(object instance)
+                {
+                    return fieldInfo.GetValue(instance) == null || AutumnUtil.IsEmptyListOrZeroArray(fieldInfo.GetValue(instance));
                 }
             }
         }
@@ -73,7 +82,7 @@ namespace AutumnFramework
             BeanTypes = types.Where(t => t.GetCustomAttribute<Bean>() != null).ToArray();
             foreach (Type beanType in BeanTypes)
             {
-                if(beanType.IsAbstract && beanType.IsSealed)
+                if (beanType.IsAbstract && beanType.IsSealed)
                 {
                     throw new AutumnCoreException("静态类不能被设置为Bean，因为这是多余的。");
                     continue;
@@ -142,17 +151,13 @@ namespace AutumnFramework
         {
             //系统级装配
             autumnConfig = Autumn.Harvest<AutumnConfig>();
-            
-            //装配Bean
-            foreach (FieldInfo fieldInfo in GetAttributedFieldsInfo<Autowired>()) 
+
+            //装配静态与非静态Bean
+            foreach (FieldInfo fieldInfo in GetAttributedFieldsInfo<Autowired>())
             {
                 Autowired autowired = fieldInfo.GetCustomAttribute<Autowired>();
 
                 Type beanType;
-                if (typeof(IEnumerable).IsAssignableFrom(fieldInfo.FieldType))
-                {
-                    //此为枚举类型
-                }
                 if (fieldInfo.FieldType.BaseType == typeof(Array))
                 {
                     //Array
@@ -190,7 +195,7 @@ namespace AutumnFramework
                         {
                             if (!(bool)boolValue)
                                 check = false;
-                        }, bean , autowired.msg);
+                        }, bean, autowired.msg);
                         if (check)
                             yield return bean;
 
@@ -199,23 +204,14 @@ namespace AutumnFramework
 
                 void Assign(object value)
                 {
-                    foreach (var obj in GetBeans(fieldInfo.DeclaringType))
-                    {
-                        if (obj != null)
-                        {
-                            try
-                            {
+                    if (fieldInfo.IsStatic)
+                        fieldInfo.SetValue(null, value);
+                    else
+                        foreach (var obj in GetBeans(fieldInfo.DeclaringType))
+                            if (obj != null)
                                 fieldInfo.SetValue(obj, value);
-
-                            }
-                            catch
-                            {
-
-                            }
-                        }
-                        else
-                            throw new AutumnCoreException($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} 装配失败,因为{obj}为空");
-                    }
+                            else
+                                throw new AutumnCoreException($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} 装配失败,因为{obj}为空");
                 }
 
             }
@@ -360,7 +356,7 @@ namespace AutumnFramework
             }
             else
             {
-                    throw new AutumnCoreException($"{type.FullName} 未添加[Bean]特性");
+                throw new AutumnCoreException($"{type.FullName} 未添加[Bean]特性");
             }
         }
     }

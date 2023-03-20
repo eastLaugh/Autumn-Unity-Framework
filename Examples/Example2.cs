@@ -49,4 +49,3 @@ public class 视图层:MonoBehaviour{
 }
 
 // 恭喜你，主系统、视图层、数据层通过Autumn畅快地共享数据
-

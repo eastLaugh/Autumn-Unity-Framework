@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4524d0e63e81ea4d97af2e58bcda074, type: 3}
   m_Name: AutumnConfig
   m_EditorClassIdentifier: 
-  HelloText: "<color=\"yellow\"> Autumn \u6DF1\u590F </color>"
+  HelloText: "<color=\"yellow\"> Autumn \u5343\u79CB \u2714</color>"
   firstStart: 0

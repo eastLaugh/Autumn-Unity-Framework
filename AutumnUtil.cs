@@ -58,6 +58,14 @@ namespace AutumnFramework
             }
             return false;
         }
+
+
+        public static IEnumerator WaitForNextFrame(Action action){
+            yield return null;
+            action?.Invoke();
+        }
     }
+
+
     
 }
