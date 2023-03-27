@@ -45,4 +45,16 @@ namespace AutumnFramework
             }
         }
     }
+
+
+    public class ObjectAutoSetup : Plugin{
+
+        protected override IEnumerable Setup()
+        {
+            return UnityEngine.Object.FindObjectsOfType(beanType);
+            // foreach(var instance in UnityEngine.Object.FindObjectsOfType(beanType)){
+            //     yield return instance;
+            // }
+        }
+    }
 }

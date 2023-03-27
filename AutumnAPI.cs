@@ -32,6 +32,14 @@ namespace AutumnFramework
         }
     }
 
+    public class Beans_ObjectAutoSetup : Beans
+    {
+        public Beans_ObjectAutoSetup()
+        {
+            plugins = new Type[] { typeof(ObjectAutoSetup) };
+        }
+    }
+
     [System.AttributeUsage(AttributeTargets.Field)]
     public class Autowired : System.Attribute
     {

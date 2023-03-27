@@ -8,6 +8,10 @@ namespace AutumnFramework
 
     public class AutumnEditor : EditorWindow
     {
+
+        [Autowired]
+        private static AutumnConfig autumnConfig;
+
         [MenuItem("Autumn/Beans")]
         public static void ShowWindows()
         {
@@ -28,7 +32,7 @@ namespace AutumnFramework
                 if (instanceID == Autumn.Harvest<AutumnSceneThread>().gameObject.GetInstanceID())
                 {
                     EditorGUI.DrawRect(selectionRect, Color.black);
-                    EditorGUI.LabelField(selectionRect, " Autumn 框架已经启动。 禁用此物件，将禁用Bean的Unity消息支持");
+                    EditorGUI.LabelField(selectionRect, "Autumn Framework Powered");
 
                     selectionRect.width = selectionRect.height;
                     selectionRect.x -= selectionRect.width;
