@@ -32,6 +32,12 @@ namespace AutumnFramework
         }
     }
 
+    public class Beans_GameObjectAutoSetup:Beans{
+        public Beans_GameObjectAutoSetup(){
+            plugins = new Type[]{typeof(GameObjectFindObjectsOfType)};
+        }
+    }
+
     [System.AttributeUsage(AttributeTargets.Field)]
     public class Autowired : System.Attribute
     {
