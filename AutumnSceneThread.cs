@@ -9,9 +9,10 @@ namespace AutumnFramework
         [Autowired]
         private static AutumnConfig autumnConfig;
 
-        // [SerializeField]
-        // [Autowired]
-        // private List<数据层> 多个数据层多个BEANS;
+        [SerializeField]
+        [Autowired]
+        private List<数据层> 多个数据层多个BEANS;
+        // private 数据层_让数据层变成BEAN抽离出来[] hh;
         private void Update()
         {
             Autumn.Call("Update");

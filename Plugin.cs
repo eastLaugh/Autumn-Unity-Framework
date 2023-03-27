@@ -45,15 +45,4 @@ namespace AutumnFramework
             }
         }
     }
-
-    public class GameObjectFindObjectsOfType : Plugin{
-
-        protected override IEnumerable Setup()
-        {
-            return GameObject.FindObjectsOfType(beanType);
-            // foreach(var instance in UnityEngine.Object.FindObjectsOfType(beanType)){
-            //     yield return instance;
-            // }
-        }
-    }
 }

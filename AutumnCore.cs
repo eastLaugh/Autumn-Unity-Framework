@@ -10,7 +10,6 @@ namespace AutumnFramework
 
     public static class Autumn
     {
-        [Autowired]
         private static AutumnConfig autumnConfig;
 
         private static Type[] BeanTypes;
@@ -151,7 +150,7 @@ namespace AutumnFramework
         public static void Autowired()
         {
             //系统级装配
-            // autumnConfig = Autumn.Harvest<AutumnConfig>();
+            autumnConfig = Autumn.Harvest<AutumnConfig>();
 
             //装配静态与非静态Bean
             foreach (FieldInfo fieldInfo in GetAttributedFieldsInfo<Autowired>())
@@ -187,7 +186,7 @@ namespace AutumnFramework
                     else
                         Assign(null);
                 }
-                IEnumerable<object> Filter(IEnumerable originBeans)
+                IEnumerable<object> Filter(IEnumerable<object> originBeans)
                 {
                     foreach (var bean in originBeans)
                     {
