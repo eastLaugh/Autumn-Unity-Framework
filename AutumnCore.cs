@@ -280,7 +280,8 @@ namespace AutumnFramework
         {
             foreach (var bean in existedBean)
             {
-                PushExistedBean(beanType, bean, false);
+                if(bean!=null)
+                    PushExistedBean(beanType, bean, false);
             }
             if (isIOCInitialized)
             {

@@ -18,13 +18,13 @@ public class SingleSystem
 
     public SingleSystem()
     {
-        Debug.Log("SingleSystem被创建，这时还没有完成自动装配");
+        // Debug.Log("SingleSystem被创建，这时还没有完成自动装配");
     }
 
     // 所有Bean兼容Unity消息（Start、Update）
     void Start()
     {
-        Debug.Log("当执行此Start内，已完成自动装配");
+        // Debug.Log("当执行此Start内，已完成自动装配");
     }
     void Update()
     {
@@ -33,7 +33,7 @@ public class SingleSystem
     public void 通过自动装配从别处调用此函数_实现解耦()
     {
         数据层.数据++;
-        Debug.Log("通过自动装配从别处调用此函数_实现解耦");
+        // Debug.Log("通过自动装配从别处调用此函数_实现解耦");
         Autumn.Harvest<SingleMonoBehaviour>().通过Harvest_API从别处调用_实现解耦();
     }
 }
@@ -55,7 +55,7 @@ public class SingleMonoBehaviour : /**/  MonoBehaviour   /**/
     {
         //哈哈，这里已经完成了自动装配。随意调用吧！
         数据层.数据++;
-        Debug.Log("Monobehaviour原生Start，会比Autumn提供的Start较晚执行");
+        // Debug.Log("Monobehaviour原生Start，会比Autumn提供的Start较晚执行");
         singleSystem.通过自动装配从别处调用此函数_实现解耦();
 
 
@@ -63,8 +63,8 @@ public class SingleMonoBehaviour : /**/  MonoBehaviour   /**/
     public void 通过Harvest_API从别处调用_实现解耦()
     {
         数据层.数据++;
-        Debug.Log("通过Harvest_API从别处调用_实现解耦");
-        Debug.Log(数据层.数据++);
+        // Debug.Log("通过Harvest_API从别处调用_实现解耦");
+        // Debug.Log(数据层.数据++);
     }
 
 }
