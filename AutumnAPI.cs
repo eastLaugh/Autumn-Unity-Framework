@@ -17,6 +17,7 @@ namespace AutumnFramework
         public virtual bool isMultiple => false;
 
     }
+    [System.AttributeUsage(System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public class Beans : Bean
     {
 

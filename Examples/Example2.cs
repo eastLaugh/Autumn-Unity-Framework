@@ -26,12 +26,12 @@ public class Example2的主系统:MonoBehaviour{
     private void Awake() {
         //由于 样本是[Beans]
         //所以 Autumn不会维持样本的单例，我们需要手动添加一些样本
-        样本 样本 =Autumn.PushBean<样本>();
+        样本 样本 =Autumn.NewBean<样本>();
         样本.样本数据=1; 
 
         //链式
-        Autumn.PushBean<样本>().样本数据=666;
-        Autumn.PushBean<样本>().样本数据=233;
+        Autumn.NewBean<样本>().样本数据=666;
+        Autumn.NewBean<样本>().样本数据=233;
     }
 
 }

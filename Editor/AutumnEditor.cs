@@ -61,7 +61,7 @@ namespace AutumnFramework
 
                     if (GUILayout.Button("PUSHBEAN"))
                     {
-                        Autumn.PushBean(kvp.Key);
+                        Autumn.NewBean(kvp.Key);
                     }
                     if (GUILayout.Button("HARVEST"))
                     {
