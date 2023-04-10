@@ -9,11 +9,13 @@ namespace AutumnFramework
 {
     public abstract class Plugin
     {
-        protected Type beanType; 
-        protected virtual IEnumerable Setup(){
+        protected Type beanType;
+        protected virtual IEnumerable Setup()
+        {
             return null;
         }
-        protected virtual bool Filter(object bean,object autowiredMsg){
+        protected virtual bool Filter(object bean, object autowiredMsg)
+        {
             return true;
         }
     }
@@ -23,8 +25,9 @@ namespace AutumnFramework
     {
         protected override IEnumerable Setup()
         {
-            if(!typeof(ScriptableObject).IsAssignableFrom(beanType)){
-                Debug.LogWarning(beanType.ToString()+"[Config]的最佳实践是用于ScriptableObject，而不是其他类。如果想要在其他类中实现类似[Config]的扩展，参考Autumn插件系统。");
+            if (!typeof(ScriptableObject).IsAssignableFrom(beanType))
+            {
+                Debug.LogWarning(beanType.ToString() + "[Config]的最佳实践是用于ScriptableObject，而不是其他类。如果想要在其他类中实现类似[Config]的扩展，参考Autumn插件系统。");
             }
             var instances = Resources.LoadAll("", beanType);
             foreach (var instance in instances)
@@ -33,7 +36,7 @@ namespace AutumnFramework
             }
         }
 
-        protected override bool Filter(object bean,object autowiredMsg)
+        protected override bool Filter(object bean, object autowiredMsg)
         {
             if (autowiredMsg == null)
             {
@@ -47,10 +50,13 @@ namespace AutumnFramework
     }
 
 
-    public class ObjectAutoSetup : Plugin{
+    public class ObjectAutoSetup : Plugin
+    {
 
         protected override IEnumerable Setup()
         {
+            //Debug.Log(UnityEngine.Object.FindObjectsOfType(typeof(VGF.SceneSystem.SceneLoader)).Length);
+            //就是找不到，不知道为什么
             return UnityEngine.Object.FindObjectsOfType(beanType);
             // foreach(var instance in UnityEngine.Object.FindObjectsOfType(beanType)){
             //     yield return instance;

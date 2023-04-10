@@ -14,9 +14,10 @@ namespace AutumnFramework
         private static AutumnConfig autumnConfig;
 
         private static Type[] BeanTypes;
-        public static Dictionary<Type, BeanConfig> IOC = new();
 
         private static Type[] types;
+        public static Dictionary<Type, BeanConfig> IOC = new();
+        private static Dictionary<Type, List<Type>> DependencyGraph = new();
 
         private static bool isIOCInitialized;
 
@@ -30,11 +31,14 @@ namespace AutumnFramework
         //        ↓
         static void AutumnUniqueEntry()
         {
+
             isIOCInitialized = false;
             //    ↓
             InitializeIOC();    //   →  插件 Setup 钩子   →   Unity 原生Awake消息
             //    ↓
             isIOCInitialized = true;   // 此时所有Bean已生成，等待装配
+            //    ↓         
+            ScanDependency();
             //    ↓         
             Autowired();      // 自动装配 → 插件 Filter 钩子
             //    ↓
@@ -44,7 +48,11 @@ namespace AutumnFramework
             //    ↓
             CheckEmptywired();  // 空装配检查
             //     ↓    
+
         }
+
+
+
         //     ↓
         // Unity 原生Start消息
 
@@ -52,6 +60,13 @@ namespace AutumnFramework
         // 后续操作生命周期
         // PushBean() → Autumn Start 消息  →  Autowired()
         // Autowired() → Autumn Filter 消息
+
+
+        private static void ScanDependency()
+        {
+            IEnumerable<FieldInfo> fieldInfos = types.SelectMany(type => type.GetFields(BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)).Where(fieldInfo => fieldInfo.GetCustomAttribute<Autowired>() != null);
+            //TODO
+        }
 
         public static void CheckEmptywired()
         {
@@ -76,7 +91,7 @@ namespace AutumnFramework
                 }
             }
         }
-        public static void InitializeIOC()
+        private static void InitializeIOC()
         {
             #region 添加Bean操作
             types = Assembly.GetExecutingAssembly().GetTypes();
@@ -86,21 +101,33 @@ namespace AutumnFramework
                 if (beanType.IsAbstract && beanType.IsSealed)
                 {
                     throw new AutumnCoreException("静态类不能被设置为Bean，因为这是多余的。");
-                    continue;
+                }
+                if (IOC.ContainsKey(beanType))
+                {
+                }
+                else
+                {
+                    SetupBean(beanType);
                 }
 
-                BeanConfig beanConfig = CreateEmptyBeanConfig(beanType);
-                if (beanType.GetCustomAttribute<Beans>() == null)
-                {
-                    NewBean(beanType);
-                }
-
-                PlugIn(beanType, "Setup", IEnumerableValue =>
-                {
-                    PushExistedBean(beanType, (IEnumerable)IEnumerableValue);
-                });
             }
             #endregion
+        }
+
+        private static BeanConfig SetupBean(Type beanType)
+        {
+            BeanConfig beanConfig = CreateEmptyBeanConfig(beanType);
+
+            if (beanType.GetCustomAttribute<Beans>() == null)
+            {
+                NewBean(beanType);
+            }
+
+            PlugIn(beanType, "Setup", IEnumerableValue =>
+            {
+                PushExistedBean(beanType, (IEnumerable)IEnumerableValue);
+            });
+            return beanConfig;
         }
 
         private static void PlugIn(Type beanType, String methodName, Action<object> operation, params object[] paraments)
@@ -230,6 +257,8 @@ namespace AutumnFramework
         }
 
         #endregion
+
+        #region 增删改查
         public static TBean NewBean<TBean>() where TBean : class
         {
             return NewBean(typeof(TBean)) as TBean;
@@ -238,7 +267,7 @@ namespace AutumnFramework
         {
             object chain = null;
 
-            switch (GetEntity(beanType))
+            switch (BeanConfig.GetEntity(beanType))
             {
                 case BeanConfig.Entity.Monobehaviour:
                     GameObject g = new GameObject(beanType.Name);
@@ -268,23 +297,43 @@ namespace AutumnFramework
         }
         public static object UnBean(this object any)
         {
-            
+            PullExistedBeanForAllBaseType(any);
+            if (isIOCInitialized)
+            {
+                Autowired();
+            }
             return any;
         }
         public static object Bean(this object any)
         {
             PushExistedBeanForAllBaseType(any);
-            Autowired();
+            if (isIOCInitialized)
+            {
+                Autowired();
+            }
             return any;
         }
-        public static object PushExistedBeanForAllBaseType(object existedBean){
+        private static void PullExistedBeanForAllBaseType(object existedBean)
+        {
             Type type = existedBean.GetType();
-            do
+            while (type != null && type.GetCustomAttribute<Bean>() != null)
             {
-                PushExistedBean(type,existedBean);
-                type=type.BaseType;
-            } while (type!=null);
-            return existedBean;
+                if (IOC.TryGetValue(type, out BeanConfig beanConfig))
+                {
+                    beanConfig.Beans.Remove(existedBean);    //TODO 单独封装为一个函数
+                }
+                type = type.BaseType;
+            }
+
+        }
+        private static void PushExistedBeanForAllBaseType(object existedBean)
+        {
+            Type type = existedBean.GetType();
+            while (type != null && type.GetCustomAttribute<Bean>() != null)
+            {
+                PushExistedBean(type, existedBean);
+                type = type.BaseType;
+            }
         }
         private static object PushExistedBean(Type beanType, object existedBean)
         {
@@ -293,8 +342,7 @@ namespace AutumnFramework
             }
             else
             {
-                Debug.LogWarning(string.Format("似乎没有将 {0} 注册为[Beans]" ,beanType));
-                return existedBean;
+                beanConfig = SetupBean(beanType);
             }
             beanConfig.Beans.Add(existedBean);
             if (isIOCInitialized)
@@ -332,21 +380,8 @@ namespace AutumnFramework
             }
             return chain;
         }
-        private static BeanConfig.Entity GetEntity(Type beanType)
-        {
-            if (typeof(MonoBehaviour).IsAssignableFrom(beanType))
-            {
-                return BeanConfig.Entity.Monobehaviour;
-            }
-            else if (typeof(ScriptableObject).IsAssignableFrom(beanType))
-            {
-                return BeanConfig.Entity.ScriptalObject;
-            }
-            else
-            {
-                return BeanConfig.Entity.Plain;
-            }
-        }
+        #endregion
+
         public static void Call(String functionName, params object[] paraments)
         {
             foreach (KeyValuePair<Type, BeanConfig> kvp in IOC)

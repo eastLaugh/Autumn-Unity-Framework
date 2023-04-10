@@ -28,6 +28,21 @@ namespace AutumnFramework
 
         public BeanConfig(Entity entity) : this(new List<object>(), entity) { }
 
+        public static BeanConfig.Entity GetEntity(Type beanType)
+        {
+            if (typeof(MonoBehaviour).IsAssignableFrom(beanType))
+            {
+                return BeanConfig.Entity.Monobehaviour;
+            }
+            else if (typeof(ScriptableObject).IsAssignableFrom(beanType))
+            {
+                return BeanConfig.Entity.ScriptalObject;
+            }
+            else
+            {
+                return BeanConfig.Entity.Plain;
+            }
+        }
     }
     public static class Extension
     {
@@ -60,10 +75,7 @@ namespace AutumnFramework
         }
 
 
-        public static IEnumerator WaitForNextFrame(Action action){
-            yield return null;
-            action?.Invoke();
-        }
+        
 
         
         
