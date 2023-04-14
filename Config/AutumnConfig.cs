@@ -9,5 +9,10 @@ public class AutumnConfig : ScriptableObject
 {
     public string HelloText;
 
-    public bool firstStart;
+    [Header("指南")]
+    public bool FirstStart;
+    public string FirstStartMessage;
+
+    [Header("Autumn Core Exception")]
+    public string 重复安装Bean;
 }

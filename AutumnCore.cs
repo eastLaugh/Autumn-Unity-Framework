@@ -38,7 +38,7 @@ namespace AutumnFramework
             //    ↓
             isIOCInitialized = true;   // 此时所有Bean已生成，等待装配
             //    ↓         
-            ScanDependency();
+            //ScanDependency();
             //    ↓         
             Autowired();      // 自动装配 → 插件 Filter 钩子
             //    ↓
@@ -48,7 +48,7 @@ namespace AutumnFramework
             //    ↓
             CheckEmptywired();  // 空装配检查
             //     ↓    
-
+            Tutorial();
         }
 
 
@@ -61,7 +61,13 @@ namespace AutumnFramework
         // PushBean() → Autumn Start 消息  →  Autowired()
         // Autowired() → Autumn Filter 消息
 
-
+        static void Tutorial(){
+            Debug.Log(autumnConfig.HelloText);
+            if(autumnConfig.FirstStart){
+                Debug.Log(autumnConfig.FirstStartMessage);
+                autumnConfig.FirstStart=false;
+            }
+        }
         private static void ScanDependency()
         {
             IEnumerable<FieldInfo> fieldInfos = types.SelectMany(type => type.GetFields(BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)).Where(fieldInfo => fieldInfo.GetCustomAttribute<Autowired>() != null);
@@ -116,9 +122,14 @@ namespace AutumnFramework
 
         private static BeanConfig SetupBean(Type beanType)
         {
+            if (IOC.ContainsKey(beanType))
+            {
+                throw new AutumnCoreException(autumnConfig.重复安装Bean);
+            }
+
             BeanConfig beanConfig = CreateEmptyBeanConfig(beanType);
 
-            if (beanType.GetCustomAttribute<Beans>() == null)
+            if (beanType.GetCustomAttribute<Bean>().AutoInstantial)
             {
                 NewBean(beanType);
             }
@@ -430,5 +441,9 @@ namespace AutumnFramework
                 throw new AutumnCoreException($"{type.FullName} 未添加[Bean]特性");
             }
         }
+
+
+
+
     }
 }

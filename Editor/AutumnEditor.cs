@@ -29,10 +29,10 @@ namespace AutumnFramework
         {
 
             if (Application.isPlaying)
-                if (instanceID == Autumn.Harvest<AutumnSceneThread>().gameObject.GetInstanceID())
+                if (instanceID == Autumn.Harvest<AutumnSceneGuard>().gameObject.GetInstanceID())
                 {
                     EditorGUI.DrawRect(selectionRect, Color.black);
-                    EditorGUI.LabelField(selectionRect, "Autumn Framework Powered");
+                    EditorGUI.LabelField(selectionRect, "Autumn Framework Powered (Dont Kill Me)");
 
                     selectionRect.width = selectionRect.height;
                     selectionRect.x -= selectionRect.width;

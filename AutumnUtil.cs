@@ -18,6 +18,7 @@ namespace AutumnFramework
             Plain,  //开发中
             ScriptalObject,
         }
+        
         public BeanConfig(List<object> beans, Entity entity)
         {
             Beans = beans;
@@ -44,11 +45,6 @@ namespace AutumnFramework
             }
         }
     }
-    public static class Extension
-    {
-    }
-
-    
 
     public class AutumnCoreException : System.Exception
     {
@@ -72,13 +68,7 @@ namespace AutumnFramework
                 return true;
             }
             return false;
-        }
-
-
-        
-
-        
-        
+        }        
     }
 
 

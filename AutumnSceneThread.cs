@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 namespace AutumnFramework
 {
     [Bean]
-    public class AutumnSceneThread : MonoBehaviour
+    public class AutumnSceneGuard : MonoBehaviour
     {
         [Autowired]
         private static AutumnConfig autumnConfig;
@@ -20,11 +20,11 @@ namespace AutumnFramework
         {
             Autumn.Call("Update");
         }
-
+        private void Awake() {
+            
+        }
         private void Start()
         {
-            Debug.Log(autumnConfig.HelloText);
-
             StartCoroutine(WaitForNextFrame(() =>
             {
                 Autumn.Call("AfterStart");
