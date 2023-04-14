@@ -27,7 +27,7 @@ namespace AutumnFramework
         {
             if (!typeof(ScriptableObject).IsAssignableFrom(beanType))
             {
-                Debug.LogWarning(beanType.ToString() + "[Config]的最佳实践是用于ScriptableObject，而不是其他类。如果想要在其他类中实现类似[Config]的扩展，参考Autumn插件系统。");
+                Debug.LogWarning(beanType.ToString() + "[Config]的最佳实践是用于ScriptableObject，而不是其他类。");
             }
             var instances = Resources.LoadAll("", beanType);
             foreach (var instance in instances)

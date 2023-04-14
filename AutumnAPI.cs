@@ -14,14 +14,14 @@ namespace AutumnFramework
     public class Bean : System.Attribute
     {
         public Type[] plugins = new Type[] { };
-        public virtual bool isMultiple => false;
+        // public virtual bool isMultiple => false;
 
     }
     [System.AttributeUsage(System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public class Beans : Bean
     {
 
-        override public bool isMultiple => true;
+        // override public bool isMultiple => true;
     }
     public class Config : Beans
     {
@@ -33,9 +33,26 @@ namespace AutumnFramework
         }
     }
 
+    public class BeanInScene : Bean
+    {
+        public BeanInScene()
+        {
+            plugins = new Type[] { typeof(ObjectAutoSetup) };
+        }
+    }
+
+
     public class Beans_ObjectAutoSetup : Beans
     {
         public Beans_ObjectAutoSetup()
+        {
+            plugins = new Type[] { typeof(ObjectAutoSetup) };
+        }
+    }
+
+    public class BeansInScene : Beans
+    {
+        public BeansInScene()
         {
             plugins = new Type[] { typeof(ObjectAutoSetup) };
         }
