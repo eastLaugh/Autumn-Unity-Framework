@@ -10,7 +10,6 @@ namespace AutumnFramework
 
     public static class Autumn
     {
-        [Autowired]
         private static AutumnConfig autumnConfig;
 
         private static Type[] BeanTypes;
@@ -25,13 +24,14 @@ namespace AutumnFramework
         // Autumn 生命周期
         //  启动 Play
         //        ↓
-        // Unity 原生 Awake消息   ← 可提前PushBean
+        // Unity 原生 Awake消息   ← 可提前注册为Bean
         //        ↓
         //Unity 原生 OnEnable消息
         //        ↓
         static void AutumnUniqueEntry()
         {
-
+            autumnConfig = Resources.LoadAll<AutumnConfig>("")[0];
+            //    ↓
             isIOCInitialized = false;
             //    ↓
             InitializeIOC();    //   →  插件 Setup 钩子   →   Unity 原生Awake消息
@@ -47,25 +47,23 @@ namespace AutumnFramework
             Call("Start");     //  Autumn Start 消息
             //    ↓
             CheckEmptywired();  // 空装配检查
-            //     ↓    
+            //    ↓    
             Tutorial();
         }
-
-
-
         //     ↓
         // Unity 原生Start消息
-
 
         // 后续操作生命周期
         // PushBean() → Autumn Start 消息  →  Autowired()
         // Autowired() → Autumn Filter 消息
 
-        static void Tutorial(){
+        static void Tutorial()
+        {
             Debug.Log(autumnConfig.HelloText);
-            if(autumnConfig.FirstStart){
+            if (autumnConfig.FirstStart)
+            {
                 Debug.Log(autumnConfig.FirstStartMessage);
-                autumnConfig.FirstStart=false;
+                autumnConfig.FirstStart = false;
             }
         }
         private static void ScanDependency()
@@ -110,6 +108,7 @@ namespace AutumnFramework
                 }
                 if (IOC.ContainsKey(beanType))
                 {
+                    //已被手动安装过
                 }
                 else
                 {
@@ -166,7 +165,9 @@ namespace AutumnFramework
                     {
                         Plugin pluginInstance = (Plugin)Activator.CreateInstance(pluginType);
                         //注入beanType
-                        typeof(Plugin).GetField("beanType", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(pluginInstance, beanType);
+                        typeof(Plugin).GetField(nameof(Plugin.beanType), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(pluginInstance, beanType);
+                        //注入AutumnConfig
+                        typeof(Plugin).GetField(nameof(Plugin.autumnConfig), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(pluginInstance, autumnConfig);
 
                         returnValue = methodInfo.Invoke(pluginInstance, paraments);
                     }

@@ -9,7 +9,8 @@ namespace AutumnFramework
 {
     public abstract class Plugin
     {
-        protected Type beanType;
+        internal AutumnConfig autumnConfig;
+        internal Type beanType;
         protected virtual IEnumerable Setup()
         {
             return null;
@@ -52,15 +53,15 @@ namespace AutumnFramework
 
     public class ObjectAutoSetup : Plugin
     {
-
         protected override IEnumerable Setup()
         {
-            //Debug.Log(UnityEngine.Object.FindObjectsOfType(typeof(VGF.SceneSystem.SceneLoader)).Length);
-            //就是找不到，不知道为什么
-            return UnityEngine.Object.FindObjectsOfType(beanType);
-            // foreach(var instance in UnityEngine.Object.FindObjectsOfType(beanType)){
-            //     yield return instance;
-            // }
+            UnityEngine.Object[] objects = UnityEngine.Object.FindObjectsOfType(beanType);
+            if (objects == null || objects.Length == 0)
+            {
+                // throw new AutumnCoreException(String.Format(autumnConfig.场景丢失Bean, beanType));
+                Debug.LogError(String.Format(autumnConfig.场景丢失Bean, beanType));
+            }
+            return objects;
         }
     }
 }

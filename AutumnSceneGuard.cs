@@ -20,8 +20,9 @@ namespace AutumnFramework
         {
             Autumn.Call("Update");
         }
-        private void Awake() {
-            
+        private void Awake()
+        {
+
         }
         private void Start()
         {
@@ -49,7 +50,10 @@ namespace AutumnFramework
 
         private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            Autumn.Autowired();
+            if (autumnConfig.切换场景时自动装配)
+            {
+                Autumn.Autowired();
+            }
         }
     }
 }

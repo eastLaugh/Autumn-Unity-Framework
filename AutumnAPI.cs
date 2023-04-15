@@ -17,6 +17,10 @@ namespace AutumnFramework
         public virtual bool AutoInstantial => true;
 
     }
+    public class ManualBean : Bean{
+        public override bool AutoInstantial => false;
+    }
+
     [System.AttributeUsage(System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public class Beans : Bean
     {
