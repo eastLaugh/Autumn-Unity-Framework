@@ -13,9 +13,6 @@ namespace AutumnFramework
         [Autowired]
         private static AutumnConfig autumnConfig;
 
-        [SerializeField]
-        [Autowired]
-        private List<数据层> 多个数据层多个BEANS;
         private void Update()
         {
             Autumn.Call("Update");
