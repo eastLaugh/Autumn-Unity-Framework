@@ -2,8 +2,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using System.Linq; // 配合 Linq 快速地为插件设置 Filter
-using System.Collections.Generic;
 
 namespace AutumnFramework
 {
@@ -59,7 +57,7 @@ namespace AutumnFramework
             if (objects == null || objects.Length == 0)
             {
                 // throw new AutumnCoreException(String.Format(autumnConfig.场景丢失Bean, beanType));
-                Debug.LogError(String.Format(autumnConfig.场景丢失Bean, beanType));
+                Debug.LogError(string.Format(autumnConfig.场景丢失Bean, beanType));
             }
             return objects;
         }

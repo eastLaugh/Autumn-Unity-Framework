@@ -18,8 +18,6 @@
 - 开箱即用：引入Autumn后，零配置，零代码，通过[特性]与框架交互。
 - 可扩展：你可以自己编写插件，来改变Autumn组织Bean的方式。
 
-作者邮箱：east_laugh@qq.com
-
 # 使用方法
 直接将本仓库的所有文件放入Unity中即可。Examples目录及目录下文件仅供参考，可删除。
 
@@ -58,7 +56,7 @@ Config的本质是加装了插件Configurationer的Beans。[Config]适用于Scri
 
 自动装配。游戏运行时，Autumn以字段的类型为依据，自动为被[Autowired]标记的字段注入已有的Bean。如果该类型有多个实例（Beans），Autumn会尝试用列表或数组注入字段。
 
-_ [Autowired(object msg)]
+- [Autowired(object msg)]
 
 在自动装配时传入msg，用于与插件、Filter API通讯。例如，装配[Config]标记的类型时，使用[Autowired("生产环境")]会装配名称为生产环境的ScriptableObject。
 

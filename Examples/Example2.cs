@@ -7,8 +7,8 @@ using System.Linq;
 [Beans]     //注意这里是bean【S】!不是[Bean]而是[Beans]！
             // [Beans]是对[Bean]的扩充。因为有时候，我们不仅需要单例，也需要多例，
             //所以：
-            // ① Bean意味着单例，Beans意味着多例。
-            // ② Beans是不会自动初始化新值的，而Beans会自动维持单例
+            // ① Bean意味着单例，Beans意味着容纳多个Bean。
+            // ② Beans不会自动创建Bean实例，需要手动NewBean()或PushBean()
             // ③ 通过Autumn.PushBean()可以为其添加多个Bean，实现多例
 public class 样本{
 
@@ -48,4 +48,4 @@ public class 视图层:MonoBehaviour{
 
 }
 
-// 恭喜你，主系统、视图层、数据层通过Autumn畅快地共享数据
+// 主系统、视图层、数据层通过Autumn畅快地共享数据

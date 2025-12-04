@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace AutumnFramework
 {
 
 
     #region 特性
-    [System.AttributeUsage(System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
-    public class Bean : System.Attribute
+    [System.AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+    public class Bean : Attribute
     {
         public Type[] plugins = new Type[] { };
         public virtual bool AutoInstantial => true;
@@ -21,7 +16,7 @@ namespace AutumnFramework
         public override bool AutoInstantial => false;
     }
 
-    [System.AttributeUsage(System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public class Beans : Bean
     {
         public override bool AutoInstantial => false;
