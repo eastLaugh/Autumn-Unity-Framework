@@ -5,11 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Collections;
 
-namespace AutumnFramework
-{
+namespace AutumnFramework {
 
-    public static class Autumn
-    {
+    public static class Autumn {
         private static AutumnConfig autumnConfig;
 
         private static Type[] BeanTypes;
@@ -28,8 +26,7 @@ namespace AutumnFramework
         //        ↓
         //Unity 原生 OnEnable消息
         //        ↓
-        static void AutumnUniqueEntry()
-        {
+        static void AutumnUniqueEntry() {
             autumnConfig = Resources.LoadAll<AutumnConfig>("")[0];
             //    ↓
             isIOCInitialized = false;
@@ -57,61 +54,47 @@ namespace AutumnFramework
         // PushBean() → Autumn Start 消息  →  Autowired()
         // Autowired() → Autumn Filter 消息
 
-        static void Tutorial()
-        {
+        static void Tutorial() {
             Debug.Log(autumnConfig.HelloText);
-            if (autumnConfig.FirstStart)
-            {
+            if (autumnConfig.FirstStart) {
                 Debug.Log(autumnConfig.FirstStartMessage);
                 autumnConfig.FirstStart = false;
             }
         }
-        private static void ScanDependency()
-        {
+        private static void ScanDependency() {
             IEnumerable<FieldInfo> fieldInfos = types.SelectMany(type => type.GetFields(BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)).Where(fieldInfo => fieldInfo.GetCustomAttribute<Autowired>() != null);
             //TODO
         }
 
-        public static void CheckEmptywired()
-        {
-            foreach (var fieldInfo in GetAttributedFieldsInfo<Autowired>(types))
-            {
-                if (fieldInfo.IsStatic)
-                {
+        public static void CheckEmptywired() {
+            foreach (var fieldInfo in GetAttributedFieldsInfo<Autowired>(types)) {
+                if (fieldInfo.IsStatic) {
                     if (check(null))
                         Debug.LogWarning($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} ← 装配为空或空数组或空列表");
                 }
                 else
-                    foreach (var bean in GetBeans(fieldInfo.DeclaringType))
-                    {
-                        if (check(bean))
-                        {
+                    foreach (var bean in GetBeans(fieldInfo.DeclaringType)) {
+                        if (check(bean)) {
                             Debug.LogWarning($"{fieldInfo.DeclaringType.FullName} . {fieldInfo} ← 装配为空或空数组或空列表");
                         }
                     }
-                bool check(object instance)
-                {
+                bool check(object instance) {
                     return fieldInfo.GetValue(instance) == null || AutumnUtil.IsEmptyListOrZeroArray(fieldInfo.GetValue(instance));
                 }
             }
         }
-        private static void InitializeIOC()
-        {
+        private static void InitializeIOC() {
             #region 添加Bean操作
             types = Assembly.GetExecutingAssembly().GetTypes();
             BeanTypes = types.Where(t => t.GetCustomAttribute<Bean>() != null).ToArray();
-            foreach (Type beanType in BeanTypes)
-            {
-                if (beanType.IsAbstract && beanType.IsSealed)
-                {
+            foreach (Type beanType in BeanTypes) {
+                if (beanType.IsAbstract && beanType.IsSealed) {
                     throw new AutumnCoreException("静态类不能被设置为Bean，因为这是多余的。");
                 }
-                if (IOC.ContainsKey(beanType))
-                {
+                if (IOC.ContainsKey(beanType)) {
                     //已被手动安装过
                 }
-                else
-                {
+                else {
                     SetupBean(beanType);
                 }
 
@@ -119,50 +102,39 @@ namespace AutumnFramework
             #endregion
         }
 
-        private static BeanConfig SetupBean(Type beanType)
-        {
-            if (IOC.ContainsKey(beanType))
-            {
+        private static BeanConfig SetupBean(Type beanType) {
+            if (IOC.ContainsKey(beanType)) {
                 throw new AutumnCoreException(autumnConfig.重复安装Bean);
             }
 
             BeanConfig beanConfig = CreateEmptyBeanConfig(beanType);
 
-            if (beanType.GetCustomAttribute<Bean>().AutoInstantial)
-            {
+            if (beanType.GetCustomAttribute<Bean>().AutoInstantial) {
                 NewBean(beanType);
             }
 
-            PlugIn(beanType, "Setup", IEnumerableValue =>
-            {
+            PlugIn(beanType, "Setup", IEnumerableValue => {
                 PushExistedBean(beanType, (IEnumerable)IEnumerableValue);
             });
             return beanConfig;
         }
 
-        private static void PlugIn(Type beanType, String methodName, Action<object> operation, params object[] paraments)
-        {
+        private static void PlugIn(Type beanType, String methodName, Action<object> operation, params object[] paraments) {
             Type[] plugins = beanType.GetCustomAttribute<Bean>().plugins ?? new Type[] { };
             plugins = plugins.Concat(new Type[] { beanType }).ToArray();
-            foreach (var pluginType in plugins)
-            {
-                if (InvokePluginMethod(pluginType, methodName, out object returnValue, paraments))
-                {
+            foreach (var pluginType in plugins) {
+                if (InvokePluginMethod(pluginType, methodName, out object returnValue, paraments)) {
                     operation?.Invoke(returnValue);
                 }
             }
-            bool InvokePluginMethod(Type pluginType, String methodName, out object returnValue, params object[] parameters)
-            {
-                if (typeof(Plugin).IsAssignableFrom(pluginType))
-                {
+            bool InvokePluginMethod(Type pluginType, String methodName, out object returnValue, params object[] parameters) {
+                if (typeof(Plugin).IsAssignableFrom(pluginType)) {
                     MethodInfo methodInfo = pluginType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                    if (methodInfo == null)
-                    {
+                    if (methodInfo == null) {
                         returnValue = null;
                         return false;
                     }
-                    else
-                    {
+                    else {
                         Plugin pluginInstance = (Plugin)Activator.CreateInstance(pluginType);
                         //注入beanType
                         typeof(Plugin).GetField(nameof(Plugin.beanType), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(pluginInstance, beanType);
@@ -173,11 +145,9 @@ namespace AutumnFramework
                     }
 
                 }
-                else
-                {
+                else {
                     MethodInfo methodInfo = pluginType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                    if (methodInfo == null)
-                    {
+                    if (methodInfo == null) {
                         returnValue = null;
                         return false;
                     }
@@ -187,29 +157,23 @@ namespace AutumnFramework
             }
         }
         #region 自动装配
-        public static void Autowired(this object any)
-        {
+        public static void Autowired(this object any) {
             Autowired(new Type[] { any.GetType() });
         }
-        public static void Autowired<TClass>()
-        {
+        public static void Autowired<TClass>() {
             Autowired(new Type[] { typeof(TClass) });
         }
-        public static void Autowired()
-        {
+        public static void Autowired() {
             Autowired(types);
         }
-        public static void Autowired(Type[] wiredTypes)
-        {
+        public static void Autowired(Type[] wiredTypes) {
 
             //装配静态与非静态Bean
-            foreach (FieldInfo fieldInfo in GetAttributedFieldsInfo<Autowired>(wiredTypes))
-            {
+            foreach (FieldInfo fieldInfo in GetAttributedFieldsInfo<Autowired>(wiredTypes)) {
                 Autowired autowired = fieldInfo.GetCustomAttribute<Autowired>();
 
                 Type beanType;
-                if (fieldInfo.FieldType.BaseType == typeof(Array))
-                {
+                if (fieldInfo.FieldType.BaseType == typeof(Array)) {
                     //Array
                     beanType = fieldInfo.FieldType.GetElementType();
                     var beans = Filter(GetBeans(beanType)).ToArray();
@@ -217,8 +181,7 @@ namespace AutumnFramework
                     Array.Copy(beans, filledArray, beans.Length);
                     Assign(filledArray);
                 }
-                else if (fieldInfo.FieldType.IsGenericType && fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(List<>))
-                {
+                else if (fieldInfo.FieldType.IsGenericType && fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(List<>)) {
                     // List
                     beanType = fieldInfo.FieldType.GetGenericArguments()[0];
                     var beans = Filter(GetBeans(beanType)).ToArray();
@@ -227,8 +190,7 @@ namespace AutumnFramework
                     object v = Activator.CreateInstance(typeof(List<>).MakeGenericType(beanType), filledArray);
                     Assign(v);
                 }
-                else
-                {
+                else {
                     beanType = fieldInfo.FieldType;
                     object[] beans = Filter(GetBeans(beanType)).ToArray();
                     if (beans.Length > 0)
@@ -236,13 +198,10 @@ namespace AutumnFramework
                     else
                         Assign(null);
                 }
-                IEnumerable<object> Filter(IEnumerable originBeans)
-                {
-                    foreach (var bean in originBeans)
-                    {
+                IEnumerable<object> Filter(IEnumerable originBeans) {
+                    foreach (var bean in originBeans) {
                         bool check = true;
-                        PlugIn(beanType, "Filter", boolValue =>
-                        {
+                        PlugIn(beanType, "Filter", boolValue => {
                             if (!(bool)boolValue)
                                 check = false;
                         }, bean, autowired.msg);
@@ -252,8 +211,7 @@ namespace AutumnFramework
                     }
                 }
 
-                void Assign(object value)
-                {
+                void Assign(object value) {
                     if (fieldInfo.IsStatic)
                         fieldInfo.SetValue(null, value);
                     else
@@ -271,16 +229,13 @@ namespace AutumnFramework
         #endregion
 
         #region 增删改查
-        public static TBean NewBean<TBean>() where TBean : class
-        {
+        public static TBean NewBean<TBean>() where TBean : class {
             return NewBean(typeof(TBean)) as TBean;
         }
-        public static object NewBean(Type beanType)
-        {
+        public static object NewBean(Type beanType) {
             object chain = null;
 
-            switch (BeanConfig.GetEntity(beanType))
-            {
+            switch (BeanConfig.GetEntity(beanType)) {
                 case BeanConfig.Entity.Monobehaviour:
                     GameObject g = new GameObject(beanType.Name);
                     MonoBehaviour.DontDestroyOnLoad(g);
@@ -301,144 +256,115 @@ namespace AutumnFramework
             }
 
             PushExistedBean(chain.GetType(), chain);
-            if (isIOCInitialized)
-            {
+            if (isIOCInitialized) {
                 Autowired();
             }
             return chain;
         }
-        public static object UnBean(this object any)
-        {
+        public static object UnBean(this object any) {
             PullExistedBeanForAllBaseType(any);
-            if (isIOCInitialized)
-            {
+            if (isIOCInitialized) {
                 Autowired();
             }
             return any;
         }
-        public static object Bean(this object any)
-        {
+        public static object Bean(this object any) {
             PushExistedBeanForAllBaseType(any);
-            if (isIOCInitialized)
-            {
+            if (isIOCInitialized) {
                 Autowired();
             }
             return any;
         }
-        private static void PullExistedBeanForAllBaseType(object existedBean)
-        {
+        private static void PullExistedBeanForAllBaseType(object existedBean) {
             Type type = existedBean.GetType();
-            while (type != null && type.GetCustomAttribute<Bean>() != null)
-            {
-                if (IOC.TryGetValue(type, out BeanConfig beanConfig))
-                {
+            while (type != null && type.GetCustomAttribute<Bean>() != null) {
+                if (IOC.TryGetValue(type, out BeanConfig beanConfig)) {
                     beanConfig.Beans.Remove(existedBean);    //TODO 单独封装为一个函数
                 }
                 type = type.BaseType;
             }
 
         }
-        private static void PushExistedBeanForAllBaseType(object existedBean)
-        {
+        private static void PushExistedBeanForAllBaseType(object existedBean) {
             Type type = existedBean.GetType();
-            while (type != null && type.GetCustomAttribute<Bean>() != null)
-            {
+            while (type != null && type.GetCustomAttribute<Bean>() != null) {
                 PushExistedBean(type, existedBean);
                 type = type.BaseType;
             }
         }
-        private static object PushExistedBean(Type beanType, object existedBean)
-        {
-            if (IOC.TryGetValue(beanType, out BeanConfig beanConfig))
-            {
+        private static object PushExistedBean(Type beanType, object existedBean) {
+            if (IOC.TryGetValue(beanType, out BeanConfig beanConfig)) {
             }
-            else
-            {
+            else {
                 beanConfig = SetupBean(beanType);
             }
             beanConfig.Beans.Add(existedBean);
-            if (isIOCInitialized)
-            {
+            if (isIOCInitialized) {
                 Autowired();
             }
             return existedBean;
         }
-        private static void PushExistedBean(Type beanType, IEnumerable existedBean)
-        {
-            foreach (var bean in existedBean)
-            {
+        private static void PushExistedBean(Type beanType, IEnumerable existedBean) {
+            if (existedBean == null) {
+                return;
+            }
+            foreach (var bean in existedBean) {
                 if (bean != null)
                     PushExistedBean(beanType, bean);
             }
-            if (isIOCInitialized)
-            {
+            if (isIOCInitialized) {
                 Autowired();
             }
         }
-        private static BeanConfig CreateEmptyBeanConfig(Type beanType)
-        {
+        private static BeanConfig CreateEmptyBeanConfig(Type beanType) {
             BeanConfig chain;
-            if (typeof(MonoBehaviour).IsAssignableFrom(beanType))
-            {
+            if (typeof(MonoBehaviour).IsAssignableFrom(beanType)) {
                 IOC.Add(beanType, chain = new BeanConfig(BeanConfig.Entity.Monobehaviour));
             }
-            else if (typeof(ScriptableObject).IsAssignableFrom(beanType))
-            {
+            else if (typeof(ScriptableObject).IsAssignableFrom(beanType)) {
                 IOC.Add(beanType, chain = new BeanConfig(BeanConfig.Entity.ScriptalObject));
             }
-            else
-            {
+            else {
                 IOC.Add(beanType, chain = new BeanConfig(BeanConfig.Entity.Plain));
             }
             return chain;
         }
         #endregion
 
-        public static void Call(String functionName, params object[] paraments)
-        {
-            foreach (KeyValuePair<Type, BeanConfig> kvp in IOC)
-            {
-                switch (kvp.Value.BeanEntity)
-                {
+        public static void Call(String functionName, params object[] paraments) {
+            foreach (KeyValuePair<Type, BeanConfig> kvp in IOC) {
+                switch (kvp.Value.BeanEntity) {
                     case BeanConfig.Entity.Monobehaviour:
                         //Autumn消息不支持MonoBehaviour
                         break;
 
                     default:
                         if (kvp.Value.Beans != null)
-                            foreach (var bean in kvp.Value.Beans)
-                            {
+                            foreach (var bean in kvp.Value.Beans) {
                                 kvp.Key.GetMethod(functionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.Invoke(bean, paraments);
                             }
                         break;
                 }
             }
         }
-        private static IEnumerable<FieldInfo> GetAttributedFieldsInfo<TAttribute>(Type[] _types) where TAttribute : Attribute
-        {
+        private static IEnumerable<FieldInfo> GetAttributedFieldsInfo<TAttribute>(Type[] _types) where TAttribute : Attribute {
             return _types.SelectMany(type => type.GetFields(BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)).Where(field => field.GetCustomAttribute<TAttribute>() != null);
         }
-        public static T Harvest<T>() where T : class
-        {
+        public static T Harvest<T>() where T : class {
             return Harvest(typeof(T)) as T;
         }
-        public static object Harvest(Type type)
-        {
+        public static object Harvest(Type type) {
             return GetBeans(type).First();
         }
 
-        public static List<object> GetBeans(Type type)
-        {
-            if (type.IsAbstract && type.IsSealed)
-            {
+        public static List<object> GetBeans(Type type) {
+            if (type.IsAbstract && type.IsSealed) {
                 throw new AutumnCoreException($"{type}是一个静态类，请直接调用，而不是使用Autumn");
             }
-            else if (IOC.TryGetValue(type, out BeanConfig instance))
-            {
+            else if (IOC.TryGetValue(type, out BeanConfig instance)) {
                 return instance.Beans;
             }
-            else
-            {
+            else {
                 throw new AutumnCoreException($"{type.FullName} 未添加[Bean]特性");
             }
         }

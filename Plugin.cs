@@ -3,59 +3,45 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace AutumnFramework
-{
-    public abstract class Plugin
-    {
+namespace AutumnFramework {
+    public abstract class Plugin {
         internal AutumnConfig autumnConfig;
         internal Type beanType;
-        protected virtual IEnumerable Setup()
-        {
+        protected virtual IEnumerable Setup() {
             return null;
         }
-        protected virtual bool Filter(object bean, object autowiredMsg)
-        {
+        protected virtual bool Filter(object bean, object autowiredMsg) {
             return true;
         }
     }
 
     // 用于[Config]的Bean的外置插件 （Autumn Built-In）
-    public class Configurationer : Plugin
-    {
-        protected override IEnumerable Setup()
-        {
-            if (!typeof(ScriptableObject).IsAssignableFrom(beanType))
-            {
+    public class Configurationer : Plugin {
+        protected override IEnumerable Setup() {
+            if (!typeof(ScriptableObject).IsAssignableFrom(beanType)) {
                 Debug.LogWarning(beanType.ToString() + "[Config]的最佳实践是用于ScriptableObject，而不是其他类。");
             }
             var instances = Resources.LoadAll("", beanType);
-            foreach (var instance in instances)
-            {
+            foreach (var instance in instances) {
                 yield return instance;
             }
         }
 
-        protected override bool Filter(object bean, object autowiredMsg)
-        {
-            if (autowiredMsg == null)
-            {
+        protected override bool Filter(object bean, object autowiredMsg) {
+            if (autowiredMsg == null) {
                 return true; //放行
             }
-            else
-            {
+            else {
                 return (bean as ScriptableObject).name == autowiredMsg.ToString();
             }
         }
     }
 
 
-    public class ObjectAutoSetup : Plugin
-    {
-        protected override IEnumerable Setup()
-        {
+    public class ObjectAutoSetup : Plugin {
+        protected override IEnumerable Setup() {
             UnityEngine.Object[] objects = UnityEngine.Object.FindObjectsOfType(beanType);
-            if (objects == null || objects.Length == 0)
-            {
+            if (objects == null || objects.Length == 0) {
                 // throw new AutumnCoreException(String.Format(autumnConfig.场景丢失Bean, beanType));
                 Debug.LogError(string.Format(autumnConfig.场景丢失Bean, beanType));
             }

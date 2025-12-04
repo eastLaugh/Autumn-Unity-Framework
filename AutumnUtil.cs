@@ -3,24 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AutumnFramework
-{
+namespace AutumnFramework {
     [System.Serializable]
-    public struct BeanConfig
-    {
+    public struct BeanConfig {
         [UnityEngine.SerializeField]
         public List<object> Beans;
 
         public Entity BeanEntity;
-        public enum Entity
-        {
+        public enum Entity {
             Monobehaviour,
             Plain,  //开发中
             ScriptalObject,
         }
-        
-        public BeanConfig(List<object> beans, Entity entity)
-        {
+
+        public BeanConfig(List<object> beans, Entity entity) {
             Beans = beans;
             BeanEntity = entity;
         }
@@ -29,48 +25,39 @@ namespace AutumnFramework
 
         public BeanConfig(Entity entity) : this(new List<object>(), entity) { }
 
-        public static BeanConfig.Entity GetEntity(Type beanType)
-        {
-            if (typeof(MonoBehaviour).IsAssignableFrom(beanType))
-            {
+        public static BeanConfig.Entity GetEntity(Type beanType) {
+            if (typeof(MonoBehaviour).IsAssignableFrom(beanType)) {
                 return BeanConfig.Entity.Monobehaviour;
             }
-            else if (typeof(ScriptableObject).IsAssignableFrom(beanType))
-            {
+            else if (typeof(ScriptableObject).IsAssignableFrom(beanType)) {
                 return BeanConfig.Entity.ScriptalObject;
             }
-            else
-            {
+            else {
                 return BeanConfig.Entity.Plain;
             }
         }
     }
 
-    public class AutumnCoreException : System.Exception
-    {
+    public class AutumnCoreException : System.Exception {
         public AutumnCoreException() { }
         public AutumnCoreException(string message) : base(message) { }
     }
 
-    public static class AutumnUtil{
-        public static bool IsEmptyListOrZeroArray(object obj)
-        {
-            if (obj == null)
-            {
+    public static class AutumnUtil {
+        public static bool IsEmptyListOrZeroArray(object obj) {
+            if (obj == null) {
                 return true;
             }
-            if (obj is IList list && list.Count == 0)
-            {
+            if (obj is IList list && list.Count == 0) {
                 return true;
             }
-            if (obj is Array array && array.Length == 0)
-            {
+            if (obj is Array array && array.Length == 0) {
                 return true;
             }
             return false;
-        }        
+        }
     }
 
 
-    
+
 }

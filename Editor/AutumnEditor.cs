@@ -29,16 +29,25 @@ namespace AutumnFramework
         {
 
             if (Application.isPlaying)
-                if (instanceID == Autumn.Harvest<AutumnSceneGuard>().gameObject.GetInstanceID())
+            {
+                try
                 {
-                    EditorGUI.DrawRect(selectionRect, Color.black);
-                    EditorGUI.LabelField(selectionRect, "Autumn Framework Powered (Dont Kill Me)");
+                    var sceneGuard = Autumn.Harvest<AutumnSceneGuard>();
+                    if (sceneGuard != null && sceneGuard.gameObject != null && instanceID == sceneGuard.gameObject.GetInstanceID())
+                    {
+                        EditorGUI.DrawRect(selectionRect, Color.black);
+                        EditorGUI.LabelField(selectionRect, "Autumn Framework Powered (Dont Kill Me)");
 
-                    selectionRect.width = selectionRect.height;
-                    selectionRect.x -= selectionRect.width;
-                    GUI.DrawTexture(selectionRect, EditorGUIUtility.IconContent("_Popup").image as Texture2D);
-
+                        selectionRect.width = selectionRect.height;
+                        selectionRect.x -= selectionRect.width;
+                        GUI.DrawTexture(selectionRect, EditorGUIUtility.IconContent("_Popup").image as Texture2D);
+                    }
                 }
+                catch
+                {
+                    // 忽略异常，可能 IOC 还未初始化
+                }
+            }
 
 
         }
