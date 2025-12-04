@@ -7,9 +7,20 @@ namespace AutumnFramework {
     public abstract class Plugin {
         internal AutumnConfig autumnConfig;
         internal Type beanType;
+
+        /// <summary>
+        /// 自定义装配逻辑，可以额外装配 Bean 到 IOC 中
+        /// </summary>
+        /// <returns>额外装配的 Bean 迭代器</returns>
         protected virtual IEnumerable Setup() {
             return null;
         }
+        /// <summary>
+        /// 过滤 Beans , 选择性实现 Autowired 特性
+        /// </summary>
+        /// <param name="bean"> 当前 Bean </param>
+        /// <param name="autowiredMsg"> Autowired 上下文 </param>
+        /// <returns>该 Bean 是否符合装配条件</returns>
         protected virtual bool Filter(object bean, object autowiredMsg) {
             return true;
         }
@@ -29,9 +40,8 @@ namespace AutumnFramework {
 
         protected override bool Filter(object bean, object autowiredMsg) {
             if (autowiredMsg == null) {
-                return true; //放行
-            }
-            else {
+                return true;
+            } else {
                 return (bean as ScriptableObject).name == autowiredMsg.ToString();
             }
         }

@@ -84,7 +84,6 @@ namespace AutumnFramework {
             }
         }
         private static void InitializeIOC() {
-            #region 添加Bean操作
             types = Assembly.GetExecutingAssembly().GetTypes();
             BeanTypes = types.Where(t => t.GetCustomAttribute<Bean>() != null).ToArray();
             foreach (Type beanType in BeanTypes) {
@@ -99,7 +98,6 @@ namespace AutumnFramework {
                 }
 
             }
-            #endregion
         }
 
         private static BeanConfig SetupBean(Type beanType) {
@@ -233,11 +231,10 @@ namespace AutumnFramework {
             return NewBean(typeof(TBean)) as TBean;
         }
         public static object NewBean(Type beanType) {
-            object chain = null;
-
+            object chain;
             switch (BeanConfig.GetEntity(beanType)) {
                 case BeanConfig.Entity.Monobehaviour:
-                    GameObject g = new GameObject(beanType.Name);
+                    GameObject g = new(beanType.Name);
                     MonoBehaviour.DontDestroyOnLoad(g);
 
                     chain = g.AddComponent(beanType);
@@ -331,6 +328,7 @@ namespace AutumnFramework {
         }
         #endregion
 
+        #region 调用消息、钩子
         public static void Call(String functionName, params object[] paraments) {
             foreach (KeyValuePair<Type, BeanConfig> kvp in IOC) {
                 switch (kvp.Value.BeanEntity) {
@@ -369,6 +367,7 @@ namespace AutumnFramework {
             }
         }
 
+        #endregion
 
 
 

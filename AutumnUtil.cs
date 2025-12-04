@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace AutumnFramework {
-    [System.Serializable]
+    [Serializable]
     public struct BeanConfig {
-        [UnityEngine.SerializeField]
+        [SerializeField]
         public List<object> Beans;
 
         public Entity BeanEntity;

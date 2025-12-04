@@ -1,2 +1,4 @@
 [*.cs]
 csharp_new_line_before_open_brace = none
+# } else { 而不是 } \n else {
+csharp_new_line_before_else = false
